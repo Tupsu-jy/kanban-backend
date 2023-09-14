@@ -6,6 +6,7 @@ import uuid
 import logging
 from playhouse.postgres_ext import PostgresqlExtDatabase, ArrayField
 from uuid import UUID
+import subprocess
 import os
 from dotenv import load_dotenv
 
@@ -287,6 +288,20 @@ def ensure_uuid(value):
     else:
         return None  # or raise an appropriate error
 
+# Helper function to check that database is ready to accept connections
+
+
+def is_database_ready():
+    """Check if PostgreSQL is ready using the pg_isready utility."""
+    try:
+        result = subprocess.run(["pg_isready", "-h", db_host, "-U", db_user],
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                check=True, text=True)
+        return "accepting connections" in result.stdout
+    except subprocess.CalledProcessError as e:
+        current_app.logger.warning(f"Database not ready. Error: {e.stderr}")
+        return False
+
 
 # API Endpoints
 api.add_resource(UsersResource, "/user")
@@ -302,6 +317,11 @@ api.add_resource(TaskMovementAcrossColumnsResource,
 
 @app.before_request
 def before_request():
+    if not is_database_ready():
+        current_app.logger.warning(
+            'Database is not ready. Skipping connection attempt.')
+        # 503 Service Unavailable
+        return jsonify({"error": "Database is not ready"}), 503
     current_app.logger.info('Database connection opened.')
     db.connect()
 
