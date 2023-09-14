@@ -11,6 +11,8 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+load_dotenv("/etc/secrets/.env")
+
 
 # Load the database configurations from environment variables
 db_name = os.environ.get('DB_NAME', 'DEFAULT_DB_NAME')
