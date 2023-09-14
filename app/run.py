@@ -12,9 +12,8 @@ from uuid import UUID
 app = Flask(__name__)
 
 # TODO: This is not secure, needs to be changed
-# Setup CORS for the application; make sure to secure in production environments
-CORS(app, resources={r"/*": {"origins": "http://localhost:9000",
-     "methods": ["GET", "POST", "PUT", "DELETE"]}})
+# Allow all domains to access the API
+CORS(app)
 
 api = Api(app)
 
