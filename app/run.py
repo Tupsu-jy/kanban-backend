@@ -291,15 +291,12 @@ def ensure_uuid(value):
 # Helper function to check that database is ready to accept connections
 
 
-def is_database_ready():
-    """Check if PostgreSQL is ready using the pg_isready utility."""
+def is_db_ready():
+    cmd = ["pg_isready", "-h", db_host, "-U", db_user, "-d", db_name]
     try:
-        result = subprocess.run(["pg_isready", "-h", db_host, "-U", db_user],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                check=True, text=True)
-        return "accepting connections" in result.stdout
-    except subprocess.CalledProcessError as e:
-        current_app.logger.warning(f"Database not ready. Error: {e.stderr}")
+        subprocess.check_call(cmd)
+        return True
+    except subprocess.CalledProcessError:
         return False
 
 
@@ -317,11 +314,6 @@ api.add_resource(TaskMovementAcrossColumnsResource,
 
 @app.before_request
 def before_request():
-    if not is_database_ready():
-        current_app.logger.warning(
-            'Database is not ready. Skipping connection attempt.')
-        # 503 Service Unavailable
-        return jsonify({"error": "Database is not ready"}), 503
     current_app.logger.info('Database connection opened.')
     db.connect()
 
@@ -336,6 +328,11 @@ def after_request(response):
 if __name__ == "__main__":
     with app.app_context():
         current_app.logger.info('Starting Flask server.')
+
+        if not is_db_ready():
+            current_app.logger.error('Database is not ready.')
+            exit(1)
+
         current_app.logger.info('Connecting to the database.')
         db.connect()
     app.run(host='0.0.0.0')
