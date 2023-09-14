@@ -6,6 +6,16 @@ import uuid
 import logging
 from playhouse.postgres_ext import PostgresqlExtDatabase, ArrayField
 from uuid import UUID
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Load the database configurations from environment variables
+db_name = os.getenv('DB_NAME')
+db_user = os.getenv('DB_USER')
+db_password = os.getenv('DB_PASSWORD')
+db_host = os.getenv('DB_HOST')
 
 # TODO: Swagger documentation would be nice to have
 # Flask application initialization
@@ -17,10 +27,9 @@ CORS(app)
 
 api = Api(app)
 
-# TODO url needs to be moved from being hardcoded
-# Database connection settings (move to environment variables for production)
-db = PostgresqlExtDatabase('kanban_db_hoyl', user='kanban_user', password='R4j0vcIys56KTf35lEcUeOq6A6RnX7FC',
-                           host='dpg-cju70fd175es738596j0-a.frankfurt-postgres.render.com')
+# Database connection settings
+db = PostgresqlExtDatabase(db_name, user=db_user,
+                           password=db_password, host=db_host)
 
 # TODO: database table names need to be changed. This is big and annoyng job. Remember to do correclty from the beginning in future projects.
 # edit. these came from the readme instructions. Maybe not change them after all??
