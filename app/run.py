@@ -13,10 +13,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Load the database configurations from environment variables
-db_name = os.getenv('DB_NAME')
-db_user = os.getenv('DB_USER')
-db_password = os.getenv('DB_PASSWORD')
-db_host = os.getenv('DB_HOST')
+db_name = os.environ.get('DB_NAME', 'DEFAULT_DB_NAME')
+db_user = os.environ.get('DB_USER', 'DEFAULT_DB_USER')
+db_password = os.environ.get('DB_PASSWORD', 'DEFAULT_DB_PASSWORD')
+db_host = os.environ.get('DB_HOST', 'DEFAULT_DB_HOST')
+
+print(f"DB_NAME: {db_name}")
+print(f"DB_USER: {db_user}")
+print(f"DB_PASSWORD: {db_password}")
+print(f"DB_HOST: {db_host}")
+
 
 # TODO: Swagger documentation would be nice to have
 # Flask application initialization
