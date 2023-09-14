@@ -20,12 +20,6 @@ db_user = os.environ.get('DB_USER', 'DEFAULT_DB_USER')
 db_password = os.environ.get('DB_PASSWORD', 'DEFAULT_DB_PASSWORD')
 db_host = os.environ.get('DB_HOST', 'DEFAULT_DB_HOST')
 
-print(f"DB_NAME: {db_name}")
-print(f"DB_USER: {db_user}")
-print(f"DB_PASSWORD: {db_password}")
-print(f"DB_HOST: {db_host}")
-
-
 # TODO: Swagger documentation would be nice to have
 # Flask application initialization
 app = Flask(__name__)
